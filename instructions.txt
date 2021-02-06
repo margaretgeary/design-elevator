@@ -1,7 +1,11 @@
-Elevator
-Consider the problem of programming a bank of elevators, for example, in a ten floor building with one elevator. 
-Each floor has two buttons to call the elevator to the floor to take you up or down. 
-What are the fundamental algorithms and data structures one should build to control the elevator?
-Illustrate these pieces by writing code for the various user interactions with the elevator(calling it to go up/down, 
-user pressing a floor within the elevator) as well as the actions of the elevator (moving up and down responding to user requests). 
-How you would alter your approach as new requirements or constraints are added, such as multiple cars, express elevators, service floors, etc.?
+The exercise provides an opportunity to problem-solve, apply your technical skills in solution design, communicate 
+and extend or modify an existing system. Use of the whiteboard is strongly encouraged. 
+
+Consider the problem of programming a bank of elevators, for example, in a ten floor building with one elevator. Each floor 
+has two buttons to call the elevator to the floor to take you up or down. What are the fundamental algorithms and data structures 
+one should build to control the elevator? Illustrate these pieces by writing code for the various user interactions with the 
+elevator (calling it to go up/down, user pressing a floor within the elevator) as well as the actions of the elevator (moving 
+up and down responding to user requests). Pseudocode is acceptable.
+
+Walk through your code and the underlying assumptions you made as well as a couple of test scenarios. Time permitting, discuss how 
+you would alter your approach as new requirements or constraints are added, such as multiple cars, express elevators, service floors, etc.

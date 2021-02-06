@@ -1,28 +1,22 @@
-#how to integrate emergency? --> places request directly to elevatorcontrol, bypassing elevatorrequest?
-#how to frame assumptions?
-#does algorithm make sense?
-#is this acceptable or should there be actual code?
-
 Steps:
     - Gather requirements & state assumptions
     - Identify objectives of system
     - Think about best data structure that can be used
     - How many classes will be there and what will be their methods
-    - How is concurrency handled and how can we scale up?
+    - How is concurrency handled and how can system be scaled up?
 
 Assumptions:
     - Per prompt, 10-floor building with 1 elevator
         * What about a 500-story building with 50 elevators?
-    - Destination floor distribution is time dependent
-        * What about concentrating elevator near certain floors at certain times of day? 
     - All floors prioritized equally
         * What about service floors?
     - All elevators can stop at every floor
         * What about express elevators?
     - Emergency-proof system
         * What if we need to urgently open doors/sound an alarm?
+    - Destination floor distribution is random
+        * What about concentrating elevator near certain floors at certain times of day? 
     - Passengers can go up or down
-    - Passengers arrive in non-homogenous, time-varying pattern
 
 Objectives:
     - Minimize wait time of system
@@ -126,7 +120,7 @@ Other optimizations:
 
 
 
-------------------------------OLD PSEUDOCODE-------------------------------------
+--------------------------------OLD THOUGHTS-------------------------------------
 
 Controller classes:
     1. DoorControl
