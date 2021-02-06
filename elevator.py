@@ -37,12 +37,12 @@ class Building(object):
     def run(self):
         #print the elevator's current floor and direction
         while Elevator.current_floor != 0:
-            print(Elevator.current_floor, elevator.direction)
+            print(Elevator.current_floor, Elevator.direction)
             for user in self.users:
                 # if the elevator is on the same floor as the user, the elevator direction is the same as the user direction, and the user has not yet boarded:
-                if elevator.current_floor == user.on_floor and user.fin == 0 and elevator.direction == user.direction:
+                if Elevator.current_floor == user.on_floor and user.fin == 0 and elevator.direction == user.direction:
                     #add user to elevator request list
-                    elevator.request_list.append(user)
+                    Elevator.request_list.append(user)
 
 
 #
