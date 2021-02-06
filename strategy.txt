@@ -1,0 +1,160 @@
+#how to integrate emergency? --> places request directly to elevatorcontrol, bypassing elevatorrequest?
+#how to frame assumptions?
+#does algorithm make sense?
+#is this acceptable or should there be actual code?
+
+Steps:
+    - Gather requirements & state assumptions
+    - Identify objectives of system
+    - Think about best data structure that can be used
+    - How many classes will be there and what will be their methods
+    - How is concurrency handled and how can we scale up?
+
+Assumptions:
+    - Per prompt, 10-floor building with 1 elevator
+        * What about a 500-story building with 50 elevators?
+    - Destination floor distribution is time dependent
+        * What about concentrating elevator near certain floors at certain times of day? 
+    - All floors prioritized equally
+        * What about service floors?
+    - All elevators can stop at every floor
+        * What about express elevators?
+    - Emergency-proof system
+        * What if we need to urgently open doors/sound an alarm?
+    - Passengers can go up or down
+    - Passengers arrive in non-homogenous, time-varying pattern
+
+Objectives:
+    - Minimize wait time of system
+    - Minimize wait time for passenger
+    - Minimize power usage and cost 
+    - Maximize throughput
+
+Use cases for elevator:
+    1. Process up-or-down button presses
+    2. Process floor number button presses
+    3. Move or stop
+    4. Light to indicate moving direction in hallway
+    5. Light to indicate current floor number in elevator
+    6. Open or close doors
+    7. Activate emergency brake or alarm
+
+Control objects:
+    1. ElevatorControl -> communicates with other classes
+    2. Door
+        - Open, close
+    3. ElevatorCar
+        - Move up, down, stop
+    4. Button
+        - Sub-classes: FloorNumberButton, UpOrDownButton
+    5. Lights
+        - Sub-classes: FloorNumberLight, UpOrDownLight
+    6. Emergency
+
+Classes:
+    1. Button  
+        - lightOn()
+        - lightOff()
+        - placeRequest() 
+        * Places request to ElevatorRequest
+        * Subclasses of Button:
+            - ElevatorButton
+                - placeRequest()
+            - FloorButton
+                - placeRequest()
+    2. ElevatorRequest
+        - addRequest()
+        - removeRequest()
+        - getNextRequestToProcess()
+        * Receives request from Button class
+        * Processes request using SCAN Algorithm
+        * Requests then read by ElevatorControl
+    3. ElevatorControl
+        - stopElevator()
+        - startElevator()
+        * Controls elevator
+        * Reads request from ElevatorRequest class
+    4. Elevator
+        - moveUp()
+        - moveDown()
+        - stop()
+        - openDoor()
+        - closeDoor()
+        * Controlled by ElevatorController
+    
+To store requests:
+    - Use a queue and encapsulate in ElevatorRequest class.
+    - When user presses button/makes a request, add request to queue.
+    - See below SCAN algorithm.
+To control elevator:
+    - Use ElevatorControl to read requests from ElevatorRequest give instructions to Elevator about start/stop.
+
+SCAN algorithm:
+    - Two Boolean arrays, one for up direction one for down direction. 
+    - Elevators only move all the way up or all the way down. 
+    - While elevator moves, at every floor it elevator checks whether there 
+      is a request at that floor (True) then picks up passenger (sets to False).
+    - Each elevator has two queues: min heap and max heap.
+    - When elevator goes up, it is checking min heap to see if floor entry in min heap 
+      at the top is the current floor or not. if it is, we take out that floor from
+      the min heap.
+      
+Advantages to SCAN:
+    - Can serve multiple requests in parallel.
+Disadvantages to SCAN: 
+    - Elevators are continuously moving = increased cost/power usage.
+    - Elevator car can only change direction when it reaches the end = increased time.
+
+Extend to multiple elevators:
+    - Is the efficiency goal focused only at the start & end of day & not in between? 
+    - How many elevators are there? 
+    - What is the capacity of each elevator?
+
+What if we are scaling up and have 500 floors with 50 elevators?
+    - Divide floors into operational zones or sectors
+        * 5 elevators will serve first 50 floors, next 5 will serve second 50 floors, etc.
+        * Each zone will be its own encapsulated operating system 
+    - Each elevator have 1 controller.
+    - Floor-based requests can be served by any elevator, thus these requests are added to a common area accessible by all controllers.
+    - Each elevator controller runs as a separate thread and checks if it can process a floor request. Mind synchronization issues.
+
+Other optimizations:
+    - Elevators can learn from user behavior what time of day and where it is most requested.
+        * e.g. In the morning, keep elevators toward the lobby. In the evening, keep them near the higher floors.
+
+    
+
+
+
+------------------------------OLD PSEUDOCODE-------------------------------------
+
+Controller classes:
+    1. DoorControl
+        - Controls action of DoorMotor, which can open or close door.
+    2. MotionControl
+        - Controls ElevatorMotion, which can move elevator up, down, or stopped.
+    3. LightControl
+        - Controls UpOrDownLight and FloorNumberLight
+    4. UpOrDownButtonControl
+        - Accepts UpOrDownButton presses
+        - Communicate with LightControl
+    5. FloorNumberControl
+        - Accepts FloorNumberButton presses
+        - Communicate with LightControl
+    6. Dispatcher
+        - One dispatcher per elevator car
+        - Determines direction and destination of moving elevator
+
+Three class components:
+1. User
+    - Presses up-or-down button to request elevator
+    - Presses floor-number button to request specific floor.
+2. Button
+    - Elevator has floor-number button allowing users to request specific floor
+    - Floor has up-or-down button to request elevator
+    - Calls placeRequest() to add into ElevatorRequest queue when button is pushed
+    - Buttons light up when pressed and turn off when floor is reached
+3. Elevator
+    - Move up, down, or stop
+    - Open or close door (only when stopped)
+    - Store direction and floor information
