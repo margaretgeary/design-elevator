@@ -89,8 +89,8 @@ class Building(object):
 
     def run(self):
         """Runs the program. Each time it is called:
-            - Awaiting customers enter the elevator (onboard_list_customer is called)
-            - Elevator direction value (up=1, down=-1) is determined
+            - Awaiting customers enter the elevator at their start floor (add_customer is called)
+            - Elevator direction value (up = 1, down = -1) is determined
             - Elevator moves one floor up or one floor down depending on direction value
             - Any customer who has reached their end floor leaves the elevator (cancel_customer is called)
         """
@@ -114,10 +114,9 @@ class Building(object):
         return total_steps
 
     def awaiting_customers(self):
-        """Returns True if there is at least one customer not on her floor. Otherwise returns False."""
+        """Returns True if there are any customers not yet on their end floor."""
         if len(self.customer_list) > 0 or len(self.elevator.onboard_list) > 0:
             return True
-        return False
 
 def get_value(message, incorrect_message, minimal_value):
     """Interface method for getting valid integer input from user."""
@@ -134,12 +133,12 @@ def get_value(message, incorrect_message, minimal_value):
         return val
 
 def main():
-    """Main function"""
+    """Main function."""
 
     num_of_floors = get_value("How many floors are in the building? ",
-                                        "Incorrect value. Number of floors should be integer higher than 1.", 2)
+                            "Incorrect value. Number of floors should be integer higher than 1.", 2)
     customers_num = get_value("How many customers are in the building? ",
-                                    "Incorrect value. Number of customers should be non-negative integer.", 0)
+                            "Incorrect value. Number of customers should be non-negative integer.", 0)
 
     customer_list = []
 
@@ -153,3 +152,9 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# Resources referenced for developing this program:
+    # - http://pythonfiddle.com/elevator/
+    # - https://thinksoftware.medium.com/elevator-system-design-a-tricky-technical-interview-question-116f396f2b1c
+    # - https://medium.com/system-designing-interviews/design-a-elevator-system-fc5832ca0b8b
