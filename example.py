@@ -1,13 +1,14 @@
 from random import randint
 
 class Elevator(object):
-    """An elevator class. Elevator has a registered customer list, current floor, moving direction, and its own building object.
-    For scale-up consideration, elevators can also be given min and max floor numbers."""
+    """An elevator class. Elevator has an onboard customer list, current floor, moving direction, and its own building.
+    For scale-up consideration, elevators can also be given min and max floor numbers.
+    """
     # TODO: Make sub-classes that inherit from Elevator parent class, like an express elevator or double-speed elevator,
     # or allow for multiple independently operating elevators.
 
     def __init__(self, building, customer_list):
-        self.register_list = []
+        self.onboard_list = []
         self.current_floor = 0
         self.direction = 1
         self.building = building
@@ -25,26 +26,27 @@ class Elevator(object):
 
     def set_direction(self):  
         """Algorithm for setting elevator direction. Elevator proceeds to top floor, then once at top switches directions
-        to proceed to bottom floor. If there are no customers, the elevator will idle."""
-        # TODO: If we wanted to incorporate logic about where to idle an elevator at a certain time of day, it could be implemented here.
-        if self.building.customer_list == [] and self.register_list == []:
+        to proceed to bottom floor. If there are no customers, the elevator will idle.
+        """
+        # TODO: If we wanted to incorporate logic about where to idle an elevator at a certain time of day, could implement here.
+        if self.building.customer_list == [] and self.onboard_list == []:
             self.direction = 0
-        if self.current_floor >= self.building.num_of_floors - 1:
+        if self.current_floor == self.building.num_of_floors:
             self.direction = -1
-        elif self.current_floor <= 0:
+        elif self.current_floor == 1:
             self.direction = 1
 
     def add_customer(self, customer):
         """Adds customers to elevator list"""
-        self.register_list.append(customer)
+        self.onboard_list.append(customer)
 
     def cancel_customer(self, customer):
         """Removes customer from elevator list"""
-        self.register_list.remove(customer)
+        self.onboard_list.remove(customer)
 
     def exit_customers(self):
         """Once customers arrive at their end floors, they are removed from the elevator list."""
-        for customer in list(self.register_list):
+        for customer in list(self.onboard_list):
             if customer.end_floor == self.current_floor:
                 self.cancel_customer(customer)
 
@@ -52,13 +54,13 @@ class Elevator(object):
 class Customer(object):
     """A customer class. A customer has an ID, start floor number, and end floor number."""
 
-    def __init__(self, id, total_floors, start_floor=None, end_floor=None):
+    def __init__(self, id, num_of_floors):
         """Initializes customer and selects random values for start and end floors."""
         self.id = id
-        self.start_floor = randint(1, total_floors)
-        self.end_floor = randint(1, total_floors)
+        self.start_floor = randint(1, num_of_floors)
+        self.end_floor = randint(1, num_of_floors)
         #Code to handle case where the same start and end floors are randomly selected:
-        if self.end_floor == self.start_floor and self.end_floor == total_floors:
+        if self.end_floor == self.start_floor and self.end_floor == num_of_floors:
             self.end_floor -= 1 
         elif self.end_floor == self.start_floor:
             self.end_floor += 1
@@ -67,7 +69,7 @@ class Customer(object):
         return f'Customer going from {self.start_floor} to {self.end_floor}'
 
 class Building(object):
-    """A building class. Building has a number of floors, a customer list, and its own elevator object."""
+    """A building class. Building has a number of floors, a customer list, and its own elevator."""
     # TODO: If we wanted to allow for multiple elevators, use a parameter such as "elevator_array = []".
     
     def __init__(self, num_of_floors, customer_list):
@@ -76,7 +78,7 @@ class Building(object):
         self.customer_list = customer_list
         self.elevator = Elevator(self, customer_list)
         # TODO: To scale up, we could create multiple elevator objects, each of which has its own min and max floors, for example:
-        # self.elevator_array = [Elevator(1, 50, self.num_of_floors), Elevator(51, 100, self.num_of_floors)]
+        # self.elevator_array = [Elevator(self, 1, 50, customer_list), Elevator(self, 51, 100, customer_list)]
 
     def enter_customers(self):
         """When the elevator gets to a customer's floor, the customer is added to the elevator and remove from the customer list."""
@@ -87,7 +89,7 @@ class Building(object):
 
     def run(self):
         """Runs the program. Each time it is called:
-            - Awaiting customers enter the elevator (register_customer is called)
+            - Awaiting customers enter the elevator (onboard_list_customer is called)
             - Elevator direction value (up=1, down=-1) is determined
             - Elevator moves one floor up or one floor down depending on direction value
             - Any customer who has reached their end floor leaves the elevator (cancel_customer is called)
@@ -101,19 +103,19 @@ class Building(object):
 
     def output(self):
         """Returns total number of steps done by elevator."""
-        total_number = 0
+        total_steps = 0
         while self.awaiting_customers():
             self.run()
             print("current floor is", self.elevator.current_floor)
-            print("registrants are", self.elevator.register_list)
+            print("onboard passengers are", self.elevator.onboard_list)
             print("customer list is", self.customer_list)
-            print("total_number is", total_number)
-            total_number += 1
-        return total_number
+            print("total_steps is", total_steps)
+            total_steps += 1
+        return total_steps
 
     def awaiting_customers(self):
         """Returns True if there is at least one customer not on her floor. Otherwise returns False."""
-        if len(self.customer_list) > 0 or len(self.elevator.register_list) > 0:
+        if len(self.customer_list) > 0 or len(self.elevator.onboard_list) > 0:
             return True
         return False
 
